@@ -8,6 +8,7 @@ const cors = require('cors');
 const validateTokenRouter = require('./app/validateToken/router')
 var categoryRouter = require('./app/category/router');
 const authRouter = require('./app/auth/router');
+const productRouter = require('./app/product/router')
 
 var app = express();
 app.use(cors());
@@ -27,6 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', categoryRouter);
 app.use('/auth', authRouter);
 app.use('/validate', validateTokenRouter);
+app.use('/product', productRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

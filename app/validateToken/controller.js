@@ -3,7 +3,7 @@ const config = require('../../config');
 module.exports = {
     validateToken : async (req,res)=>{
         const token = req.headers.authorization.split(' ')[1];
-        const decodedToken = atob(token)
+        const decodedToken = await atob(token)
         try{
             const decode = jwt.verify(decodedToken, config.jwtKey, (error, decoded)=>{
                 if(decoded){
