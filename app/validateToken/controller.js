@@ -7,7 +7,7 @@ module.exports = {
         try{
             const decode = jwt.verify(decodedToken, config.jwtKey, (error, decoded)=>{
                 if(decoded){
-                    res.status(200).json({isTokenValid:true,message: 'token valid'});
+                    res.status(200).json({isTokenValid:true,message: 'token valid',user:decoded});
                 }else{
                     res.status(401).json({isTokenValid:false,message: 'token invalid'});
                 }
