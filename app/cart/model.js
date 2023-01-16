@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const cartSchema = mongoose.Schema(
   {
     userId: { type: String, required: true },
-    products: [
+    products: 
       {
         productId: {
           type: String,
@@ -13,7 +13,6 @@ const cartSchema = mongoose.Schema(
           default: 1,
         },
       },
-    ],
   },
   { timestamps: true }
 );

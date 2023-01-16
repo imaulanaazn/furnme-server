@@ -12,13 +12,13 @@ module.exports = {
         }
     },
     getUserCart: async (req,res)=>{
-        const {userid} = req.query;
-
+        const {id:userId} = req.params;
         try{
-            const userCart = await Cart.find({userId:userid});
+            const userCart = await Cart.find({userId:userId});
             res.status(200).json({data:userCart})
         }catch(err){
-            res.status(500).json(err)
+          console.log(err)
+            res.status(500).json({err})
         }
     },
     editCartItems: async (req,res)=>{
