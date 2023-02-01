@@ -15,7 +15,7 @@ module.exports = {
         const {id:userId} = req.params;
         try{
             const userCart = await Cart.find({userId:userId});
-            res.status(200).json({data:userCart})
+            res.status(200).json(userCart)
         }catch(err){
           console.log(err)
             res.status(500).json({err})

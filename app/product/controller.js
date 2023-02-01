@@ -3,7 +3,7 @@ module.exports = {
     getAllProducts: async (req,res)=>{
         try{
             const products = await Product.find()
-            res.status(200).json({data:products})
+            res.status(200).json(products)
         }catch(err){
             res.status(500).json(err)
         }
@@ -12,7 +12,7 @@ module.exports = {
         const {id} = req.params;
         try {
             const product = await Product.findById(id)
-            res.status(200).json({data: product})
+            res.status(200).json(product)
         } catch (err) {
             res.status(500).json(err)
         }

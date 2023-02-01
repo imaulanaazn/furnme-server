@@ -26,7 +26,7 @@ var server = http.createServer(app);
  */
 
 db.on('error',function(err){
-  console.log('connection error : tidak bisa tersambung ke database mongodb')
+  'connection error : tidak bisa tersambung ke database mongodb'
 })
 db.once('open', function(){
   server.listen(port);
