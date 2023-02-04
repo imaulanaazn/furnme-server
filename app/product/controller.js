@@ -56,8 +56,8 @@ module.exports = {
     },
     getDiscountedProducts: async (req,res)=>{
         try {
-            const productByLabel = await Product.find({discount : {$gt : 0}})
-            res.status(200).json(productByLabel)
+            const discountedProducts = await Product.find({discount: {$gt: 0}})
+            res.status(200).json(discountedProducts)
         } catch (err) {
             res.status(500).json(err)
         }
