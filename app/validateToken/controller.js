@@ -5,9 +5,8 @@ module.exports = {
         const token = req.headers.authorization.split(' ')[1];
         
         if(token !== 'undefined' && token){
-            const decodedToken = atob(token)
             try{
-                const decode = jwt.verify(decodedToken, config.jwtKey, (error, decoded)=>{
+                const decode = jwt.verify(token, config.jwtKey, (error, decoded)=>{
                     if(decoded){
                         res.status(200).json({isTokenValid:true,message: 'token valid',user:decoded});
                     }else{

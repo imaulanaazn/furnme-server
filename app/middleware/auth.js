@@ -6,9 +6,8 @@ module.exports = {
         if(!token){
             res.status(401).json({error:  'Not authorized to acces this resource'});
         }else{
-            const decodedToken = await atob(token)
             try{
-                const decode = jwt.verify(decodedToken, config.jwtKey, (error, decoded)=>{
+                const decode = jwt.verify(token, config.jwtKey, (error, decoded)=>{
                     if(decoded){
                         next();
                     }else{
