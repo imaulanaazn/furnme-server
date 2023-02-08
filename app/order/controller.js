@@ -29,7 +29,6 @@ module.exports = {
   },
   //GET USER ORDERS
   getUserOrders: async (req,res) => {
-    console.log(req.query.userId)
     try {
       const orders = await Order.find({ userId: req.query.userId });
       res.status(200).json(orders);
