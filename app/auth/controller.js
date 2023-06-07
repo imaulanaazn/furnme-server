@@ -97,7 +97,32 @@ module.exports = {
                 return res.status(500).json({ message: 'Internal server error' });
             });
     },
-    basicSignin: ()=>{
+    basicSignin: (req, res)=>{
+        const { email, password } = req.body;
 
+        if(!email || !password){
+            return res.status(400).json({ error: 'Username and password are required.' });
+        }
+
+        User.findOne({ email: email })
+            .then((user) => {
+                if (!user) {
+                    // No matching user found, suggest signup
+                    res.status(400).json({ message: 'Please signup' });
+                } else if (!user.password) {
+                    // Matching email found, but no password, suggest logging in with Google instead
+                    res.status(400).json({ message: 'Please login with Google instead' });
+                } else if (user.password === password) {
+                    // Matching email and password found, login success
+                    res.status(200).json({ message: 'Login successful' });
+                } else {
+                    // Invalid password
+                    res.status(401).json({ message: 'Invalid password' });
+                }
+            })
+            .catch((error) => {
+                console.error('Error finding user:', error);
+                res.status(500).json({ message: 'Internal server error' });
+            });
     }
 }
