@@ -2,11 +2,12 @@ const Category = require('./model');
 
 module.exports = {
     addCategory : (req, res) => {
-        const { name } = req.body;
+        const { name, thumbnail } = req.body;
       
         // Create a new Category object
         const newCategory = new Category({
-          name: name
+          name: name,
+          thumbnail: thumbnail
         });
       
         // Save the category to the database
