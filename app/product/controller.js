@@ -3,7 +3,7 @@ module.exports = {
     getAllProducts: async (req,res)=>{
         try {
             // Extract the query parameters
-            const { category, maxPrice, minPrice, rating, discount, flashSale } = req.query;
+            const { category, maxPrice, minPrice, rating, discount, flashSale, limit } = req.query;
 
             // Construct the filter object based on the query parameters
             const filter = {};
@@ -34,13 +34,19 @@ module.exports = {
               filter.flashSaleEnd = { $gte: currentDate };
             }
 
-            await Product.find(filter)
-            .then(products => {
-              res.status(200).json(products);
-            })
-            .catch(err => {
+            let productsResult;
+            try {
+              if (parseInt(limit) > 0) {
+                productsResult = await Product.find(filter).limit(limit);
+              } else {
+                productsResult = await Product.find(filter);
+              }
+
+              res.status(200).json(productsResult);
+            } catch (err) {
               res.status(500).json({ message: 'Internal server error' });
-            })
+            }
+
             
           } catch (err) { 
             // Handle any errors that occur during the process
