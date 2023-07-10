@@ -1,4 +1,6 @@
 const Product = require('./model');
+const Transaction = require('../transaction/model');
+
 module.exports = {
     getAllProducts: async (req,res)=>{
         try {
@@ -52,5 +54,30 @@ module.exports = {
             // Handle any errors that occur during the process
             res.status(500).json({ message: err.message });
           }
+    },
+    getTrendingProducts : async (req, res) => {
+      try {
+        const mostBoughtProduct = await Transaction.aggregate([
+          {
+            $unwind: '$products',
+          },
+          {
+            $group: {
+              _id: '$products.productId',
+              totalPurchases: { $sum: '$products.quantity' },
+            },
+          },
+          {
+            $sort: { totalPurchases: -1 },
+          },
+          {
+            $limit: 10,
+          },
+        ]);
+    
+        res.status(200).json(mostBoughtProduct);
+      } catch (err) {
+        res.status(500).json({ message: 'Failed to fetch most bought product', error: err.message });
+      }
     }
 }
