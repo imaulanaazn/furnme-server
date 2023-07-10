@@ -13,10 +13,6 @@ const userSchema = new Schema({
       type: Schema.Types.ObjectId,
       ref: 'Product'
     }],
-   carts: [{
-      type: Schema.Types.ObjectId,
-      ref: 'Cart'
-    }],
     recentlyViewed: [{
       type: Schema.Types.ObjectId,
       ref: 'Product'

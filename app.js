@@ -10,6 +10,7 @@ const authRouter = require('./app/auth/router');
 const categoryRouter = require('./app/category/router');
 const transactionRouter = require('./app/transaction/router');
 const cartRouter = require('./app/cart/router');
+const userRouter = require('./app/user/router');
 
 var app = express();
 app.use(cors());
@@ -27,7 +28,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/auth', authRouter);
-app.use('/cart', cartRouter);
+app.use('/users', userRouter);
+app.use('/carts', cartRouter);
 app.use('/products', productRouter);
 app.use('/categories', categoryRouter);
 app.use('/transactions', transactionRouter);
