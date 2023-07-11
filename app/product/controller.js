@@ -115,6 +115,68 @@ module.exports = {
       } catch (err) {
         res.status(500).json({ message: 'Failed to get most clicked category', error: err.message });
       }
+    },
+    getFlashSaleProducts : async (req, res) => {
+      try {
+        const currentDate = new Date();
+    
+        const flashSaleProducts = await Product.find({
+          flashSaleStart: { $lte: currentDate },
+          flashSaleEnd: { $gte: currentDate }
+        });
+    
+        res.status(200).json(flashSaleProducts);
+      } catch (err) {
+        res.status(500).json({ message: 'Failed to get flash sale products', error: err.message });
+      }
+    },
+    updateFlashSale : async (req, res) => {
+      try {
+        const { productId, flashSaleStart, flashSaleEnd } = req.body;
+    
+        // Find the product by its ID
+        const product = await Product.findById(productId);
+    
+        if (!product) {
+          return res.status(404).json({ message: 'Product not found' });
+        }
+    
+        // Update the flash sale details
+        product.flashSaleStart = flashSaleStart;
+        product.flashSaleEnd = flashSaleEnd;
+
+        console.log(product)
+    
+        // Save the updated product
+        await product.save();
+    
+        res.status(200).json({ message: 'Flash sale updated successfully', product });
+      } catch (err) {
+        res.status(500).json({ message: 'Failed to update flash sale', error: err.message });
+      }
+    },
+    deleteFlashSale : async (req, res) => {
+      try {
+        const { productId } = req.params;
+    
+        // Find the product by its ID
+        const product = await Product.findById(productId);
+    
+        if (!product) {
+          return res.status(404).json({ message: 'Product not found' });
+        }
+    
+        // Remove the flash sale details
+        product.flashSaleStart = undefined;
+        product.flashSaleEnd = undefined;
+    
+        // Save the updated product
+        await product.save();
+    
+        res.status(200).json({ message: 'Flash sale details deleted successfully', product });
+      } catch (err) {
+        res.status(500).json({ message: 'Failed to delete flash sale details', error: err.message });
+      }
     }
 }
 
