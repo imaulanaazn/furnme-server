@@ -1,5 +1,6 @@
 const Product = require('./model');
 const Transaction = require('../transaction/model');
+const User = require('../user/model');
 
 module.exports = {
     getAllProducts: async (req,res)=>{
@@ -79,5 +80,58 @@ module.exports = {
       } catch (err) {
         res.status(500).json({ message: 'Failed to fetch most bought product', error: err.message });
       }
+    },
+    getRecommendedProducts: async (req, res) => {
+      try {
+        const { userId } = req.body;
+  
+        if (!userId) {
+          const recommendedProd = await Product.find();
+          return res.status(200).json(recommendedProd);
+        }
+  
+        // Find the user by their ID and populate the recently viewed products
+        const user = await User.findById(userId).select('recentlyViewed').populate('recentlyViewed');
+  
+        if (!user || user.recentlyViewed.length === 0) {
+          const recommendedProd = await Product.find();
+          return res.status(200).json(recommendedProd);
+        }
+  
+        // Extract the category IDs from the recently viewed products
+        const categoryIds = user.recentlyViewed.flatMap((product) => product.category);
+  
+        // Count the occurrence of each category ID
+        const categoryCount = countOccurrences(categoryIds);
+  
+        // Sort the categories based on their occurrence count
+        const sortedCategories = sortCategoriesByCount(categoryCount);
+  
+        // Get the most clicked category
+        const mostClickedCategories = sortedCategories.slice(0, 3);
+  
+        const recommendedProd = await Product.find({ category: { $in: mostClickedCategories } });
+        res.status(200).json(recommendedProd);
+      } catch (err) {
+        res.status(500).json({ message: 'Failed to get most clicked category', error: err.message });
+      }
     }
 }
+
+// Function to count the occurrence of each category ID
+const countOccurrences = (categoryIds) => {
+  const count = {};
+
+  categoryIds.forEach((categoryId) => {
+    count[categoryId] = (count[categoryId] || 0) + 1;
+  });
+
+  return count;
+};
+
+// Function to sort categories based on their occurrence count
+const sortCategoriesByCount = (categoryCount) => {
+  const sortedCategories = Object.entries(categoryCount).sort((a, b) => b[1] - a[1]);
+
+  return sortedCategories.map(([categoryId]) => categoryId);
+};
