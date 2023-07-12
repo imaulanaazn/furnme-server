@@ -74,9 +74,20 @@ module.exports = {
           {
             $limit: 10,
           },
-        ]);
-    
-        res.status(200).json(mostBoughtProduct);
+          {
+            $lookup: {
+              from: 'products', // Replace 'products' with the actual collection name
+              localField: '_id',
+              foreignField: '_id',
+              as: 'productDetails',
+            },
+          },
+        ]); 
+        
+        res.status(200).json(
+          mostBoughtProduct.map(prod => prod.productDetails)
+          .flat()
+          );
       } catch (err) {
         res.status(500).json({ message: 'Failed to fetch most bought product', error: err.message });
       }
