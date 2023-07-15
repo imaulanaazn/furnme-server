@@ -6,7 +6,7 @@ module.exports = {
     getAllProducts: async (req,res)=>{
         try {
             // Extract the query parameters
-            const { category, maxPrice, minPrice, rating, discount, flashSale, limit } = req.query;
+            const { category, maxPrice, minPrice, rating, discount, flashSale, limit } = req.body;
 
             // Construct the filter object based on the query parameters
             const filter = {};
