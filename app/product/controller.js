@@ -72,7 +72,7 @@ module.exports = {
             $sort: { totalPurchases: -1 },
           },
           {
-            $limit: 10,
+            $limit: 7,
           },
           {
             $lookup: {
@@ -94,7 +94,7 @@ module.exports = {
     },
     getRecommendedProducts: async (req, res) => {
       try {
-        const { userId } = req.body;
+        const userId = req.headers.userid;
   
         if (!userId) {
           const recommendedProd = await Product.find();
