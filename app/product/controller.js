@@ -12,7 +12,7 @@ module.exports = {
             const filter = {};
 
             if (category) {
-            filter.category = { $in: category.split(',') };
+            filter.category = { $in: category };
             }
 
             if (maxPrice && !isNaN(maxPrice)) {
@@ -44,6 +44,7 @@ module.exports = {
               } else {
                 productsResult = await Product.find(filter);
               }
+              console.log(filter)
 
               res.status(200).json(productsResult);
             } catch (err) {
