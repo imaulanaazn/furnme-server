@@ -6,7 +6,7 @@ module.exports = {
     getAllProducts: async (req,res)=>{
         try {
             // Extract the query parameters
-            const { category, maxPrice, minPrice, rating, discount, flashSale, limit } = req.body;
+            const { category, maxPrice, minPrice, rating, discount, flashSale, limit } = req.headers;
 
             // Construct the filter object based on the query parameters
             const filter = {};
@@ -27,12 +27,12 @@ module.exports = {
             filter.rating = { $gte: parseFloat(rating) };
             }
 
-            if(parseInt(discount)){;
+            if(discount){;
               filter.discount = {$gte:0}
             }
 
             const currentDate = new Date();
-            if(parseInt(flashSale)){
+            if(flashSale){
               filter.flashSaleStart = { $lte: currentDate };
               filter.flashSaleEnd = { $gte: currentDate };
             }
