@@ -3,7 +3,8 @@ const router = express.Router();
 const {
     getAllProducts, 
     getTrendingProducts, 
-    getRecommendedProducts, 
+    getRecommendedProducts,
+    getNewArrivalProducts, 
     getFlashSaleProducts,
     updateFlashSale,
     deleteFlashSale
@@ -12,6 +13,7 @@ const {
 router.get('/trending', getTrendingProducts);
 router.get('/', getAllProducts);
 router.get('/recommended', getRecommendedProducts);
+router.get('/new', getNewArrivalProducts);
 router.get('/flash-sale', getFlashSaleProducts);
 router.put('/flash-sale', updateFlashSale);
 router.delete('/:productId/flash-sale', deleteFlashSale);

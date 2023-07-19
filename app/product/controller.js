@@ -80,6 +80,7 @@ module.exports = {
               from: 'products', // Replace 'products' with the actual collection name
               localField: '_id',
               foreignField: '_id',
+              as: 'productDetails',
             },
           },
         ]); 
@@ -125,6 +126,20 @@ module.exports = {
         res.status(200).json(recommendedProd);
       } catch (err) {
         res.status(500).json({ message: 'Failed to get most clicked category', error: err.message });
+      }
+    },
+    getNewArrivalProducts : async (req, res) => {
+      try {
+        // Calculate the date one week ago from the current date
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    
+        // Find products that were added within the last week
+        const newArrivalProducts = await Product.find({ createdAt: { $gte: oneWeekAgo } }).limit(10);
+    
+        res.status(200).json(newArrivalProducts);
+      } catch (err) {
+        res.status(500).json({ message: 'Failed to get new arrival products', error: err.message });
       }
     },
     getFlashSaleProducts : async (req, res) => {
