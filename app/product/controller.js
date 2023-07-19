@@ -6,13 +6,13 @@ module.exports = {
     getAllProducts: async (req,res)=>{
         try {
             // Extract the query parameters
-            const { category, maxPrice, minPrice, rating, discount, flashSale, limit } = req.headers;
+            const { category, maxprice : maxPrice, minprice : minPrice, rating, discount, flashSale, limit } = req.headers;
 
             // Construct the filter object based on the query parameters
             const filter = {};
 
             if (category) {
-            filter.category = { $in: category };
+            filter.category = { $in: category.split(',') };
             }
 
             if (maxPrice && !isNaN(maxPrice)) {
@@ -40,11 +40,11 @@ module.exports = {
             let productsResult;
             try {
               if (parseInt(limit) > 0) {
+                console.log(filter)
                 productsResult = await Product.find(filter).limit(limit);
               } else {
                 productsResult = await Product.find(filter);
               }
-              console.log(filter)
 
               res.status(200).json(productsResult);
             } catch (err) {
@@ -80,7 +80,6 @@ module.exports = {
               from: 'products', // Replace 'products' with the actual collection name
               localField: '_id',
               foreignField: '_id',
-              as: 'productDetails',
             },
           },
         ]); 
