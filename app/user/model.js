@@ -7,6 +7,10 @@ const userSchema = new Schema({
       required: true,
       unique: true
     },
+    username: {
+      type: String,
+      unique: true
+    },
     password: String,
     googleId: String,
     likedProducts: [{

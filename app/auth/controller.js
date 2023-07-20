@@ -1,6 +1,8 @@
 const User = require('../user/model.js');
 const jwt = require('jsonwebtoken');
 const config = require('../../config');
+const bcrypt = require('bcrypt');
+
 
 module.exports = {
     googleAuth: (req,res)=>{
@@ -58,32 +60,33 @@ module.exports = {
                 return res.status(500).json({ message: 'Internal server error' });
             });
     },
-    basicSignup: (req,res)=>{
-        const { email, password } = req.body;
+    basicSignup: async (req,res)=>{
+        const { username, email, password } = req.body;
 
-        if(!email || !password){
-            return res.status(400).json({ error: 'Username and password are required.' });
+        if(!email || !password || !username){
+            return res.status(400).json({ error: 'Username, email and password are required.' });
         }
 
-        User.findOne({ email: email })
+        const passwordHash = await hashPassword(password);
+
+        await User.findOne({ email: email })
             .then((user) => {
                 if (!user) {
                     // No matching user found, save the provided email and password
                     const newUser = new User({
-                        email: email,
-                        password: password
+                        username,
+                        email,
+                        password : passwordHash
                     });
                     newUser.save()
                     .then(() => {
-                        return res.status(200).json({ message: 'Signup successful' });
+                        const token = generateToken(newUser);
+                        return res.status(201).json({ message: 'Signup successful', token });
                     })
                     .catch((error) => {
                         console.error('Error saving user:', error);
                         return res.status(500).json({ message: 'Internal server error' });
                     });
-                } else if (!user.password) {
-                    // Matching email found, but no password, suggest logging in with Google instead
-                    return res.status(400).json({ message: 'Please login with Google instead' });
                 } else if (user.password) {
                     // Matching email found and password found on the database, suggest logging in instead
                     return res.status(400).json({ message: 'Please login instead' });
@@ -97,32 +100,53 @@ module.exports = {
                 return res.status(500).json({ message: 'Internal server error' });
             });
     },
-    basicSignin: (req, res)=>{
-        const { email, password } = req.body;
+    basicSignin: async (req, res)=>{
+        const { username, email, password } = req.body;
 
         if(!email || !password){
             return res.status(400).json({ error: 'Username and password are required.' });
         }
 
-        User.findOne({ email: email })
-            .then((user) => {
+        await User.findOne({ email: email })
+            .then(async (user) => {
                 if (!user) {
                     // No matching user found, suggest signup
-                    res.status(400).json({ message: 'Please signup' });
+                    return res.status(400).json({ message: 'Please signup' });
                 } else if (!user.password) {
                     // Matching email found, but no password, suggest logging in with Google instead
-                    res.status(400).json({ message: 'Please login with Google instead' });
-                } else if (user.password === password) {
-                    // Matching email and password found, login success
-                    res.status(200).json({ message: 'Login successful' });
-                } else {
-                    // Invalid password
-                    res.status(401).json({ message: 'Invalid password' });
-                }
+                    return res.status(400).json({ message: 'Please login with Google instead' });
+                } 
+                
+                const isPasswordValid = await verifyPassword(password, user.password);
+
+                if (!isPasswordValid) {
+                    return res.status(401).json({ message: 'Kata sandi salah.' });
+                  }
+                
+                  // Buat token JWT dan kirimkan sebagai respons.
+                  const token = generateToken(user);
+                  return res.status(200).json({message: 'login Succesful', token });
             })
             .catch((error) => {
                 console.error('Error finding user:', error);
                 res.status(500).json({ message: 'Internal server error' });
             });
     }
+}
+
+async function verifyPassword(password, passwordHash) {
+    return await bcrypt.compare(password, passwordHash);
+  }
+
+async function hashPassword(password) {
+    const saltRounds = 10;
+    return await bcrypt.hash(password, saltRounds);
+}
+
+// Fungsi bantu untuk membuat token JWT.
+function generateToken(user) {
+    const secretKey = config.jwtKey; // Ganti dengan kunci rahasia yang lebih kuat di lingkungan produksi.
+    const expiresIn = '84h'; // Token akan berakhir dalam 1 jam.
+
+    return jwt.sign({ id: user._id, username: user.username, email:  user.email}, secretKey, { expiresIn });
 }
