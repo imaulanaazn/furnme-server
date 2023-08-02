@@ -57,6 +57,23 @@ module.exports = {
             res.status(500).json({ message: err.message });
           }
     },
+    getProductById : async (req, res) => {
+      try {
+        const productId = req.params.productId;
+    
+        // Find the product by productId
+        const product = await Product.findById(productId).populate('category');
+    
+        if (!product) {
+          return res.status(404).json({ message: 'Product not found' });
+        }
+    
+        res.status(200).json(product);
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    },
     getTrendingProducts : async (req, res) => {
       try {
         const mostBoughtProduct = await Transaction.aggregate([
